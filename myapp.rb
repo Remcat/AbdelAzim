@@ -1,14 +1,5 @@
 # myapp.rb
 require 'sinatra'
-#require "dm-core"
-#for using auto_migrate!
-#require "dm-migrations"
-#require "digest/sha1"
-#require 'rack-flash'
-#require "sinatra-authentication"
-
-#use Rack::Session::Cookie, :secret => 'A1 sauce 1s so good you should use 1t on a11 yr st34ksssss'
-#use Rack::Flash
 
 configure do
   set :username,'Bond'
@@ -28,14 +19,14 @@ helpers do
 end
 
 get '/' do
-  session["user"] ||= nil
+  session['user'] ||= nil
   @name = session["user"] || 'World'
   haml :index
 end
 
 post '/' do
   @name = params[:message]
-  session["user"] = @name
+  session['user'] = @name
   haml :index
 end
 
@@ -43,14 +34,15 @@ get('/admin'){ haml :admin }
 
 post '/login' do
   if params['username']==settings.username&&params['password']==settings.password
+    session['user'] = params['username']
     response.set_cookie(settings.username,settings.token) 
     redirect "/private"
   else
-    "Username or Password incorrect"
+    haml :badpass 
   end
 end
 
-get('/logout'){ session["user"] = nil; response.set_cookie(settings.username, false) ; redirect '/' }
+get('/logout'){ session['user'] = nil; response.set_cookie(settings.username, false) ; redirect '/' }
 
 get '/public' do
   haml :pub
@@ -65,7 +57,6 @@ get '/form' do
   haml :form
 end 
 
-get '/:name' do |n|
-  @name = n
-  haml :index
+get '/login' do |n|
+  haml :admin
 end
